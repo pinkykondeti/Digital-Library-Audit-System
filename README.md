@@ -7,10 +7,15 @@ The Digital Library Audit System is a SQL-based project designed to manage and a
 -- Features
 
 1.Book and student management
+
 2.Track issued and returned books
+
 3.Identify overdue books (beyond 14 days)
+
 4.Calculate penalty for late returns
+
 5.Analyze most popular book categories
+
 6.Detect inactive students (no activity in last 3 years)
 
 -- Database Schema
@@ -67,7 +72,7 @@ SOURCE digital_library_audit_final.sql;
 
 --Key Queries
 
--Overdue Books
+1.Overdue Books
 
 SELECT s.StudentName, b.Title, DATEDIFF(CURDATE(), ib.IssueDate) AS DaysOverdue
 
@@ -81,7 +86,7 @@ WHERE ib.ReturnDate IS NULL
 
 AND DATEDIFF(CURDATE(), ib.IssueDate) > 14;
 
--Popular Categories
+2.Popular Categories
 
 SELECT b.Category, COUNT(*) AS TotalBorrows
 
@@ -93,7 +98,7 @@ GROUP BY b.Category
 
 ORDER BY TotalBorrows DESC;
 
--Inactive Students
+3.Inactive Students
 
 
 UPDATE Students1 s
@@ -101,21 +106,33 @@ UPDATE Students1 s
 SET Status = 'Inactive'
 
 WHERE NOT EXISTS (
+
     SELECT 1
+    
     FROM IssuedBooks1 ib
+    
     WHERE ib.StudentID = s.StudentID
+    
     AND ib.IssueDate >= DATE_SUB(CURDATE(), INTERVAL 3 YEAR)
+    
 );
 
--Penalty Calculation
+4.Penalty Calculation
 
 SELECT 
+
     s.StudentName,
+    
     b.Title,
+    
     CASE
+    
         WHEN DATEDIFF(CURDATE(), ib.IssueDate) > 14
+        
         THEN (DATEDIFF(CURDATE(), ib.IssueDate) - 14) * 5
+        
         ELSE 0
+        
     END AS PenaltyAmount
     
 FROM IssuedBooks1 ib
