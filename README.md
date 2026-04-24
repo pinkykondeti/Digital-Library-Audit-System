@@ -70,25 +70,36 @@ SOURCE digital_library_audit_final.sql;
 -Overdue Books
 
 SELECT s.StudentName, b.Title, DATEDIFF(CURDATE(), ib.IssueDate) AS DaysOverdue
+
 FROM IssuedBooks1 ib
+
 JOIN Students1 s ON ib.StudentID = s.StudentID
+
 JOIN Books1 b ON ib.BookID = b.BookID
+
 WHERE ib.ReturnDate IS NULL
+
 AND DATEDIFF(CURDATE(), ib.IssueDate) > 14;
 
 -Popular Categories
 
 SELECT b.Category, COUNT(*) AS TotalBorrows
+
 FROM IssuedBooks1 ib
+
 JOIN Books1 b ON ib.BookID = b.BookID
+
 GROUP BY b.Category
+
 ORDER BY TotalBorrows DESC;
 
 -Inactive Students
 
 
 UPDATE Students1 s
+
 SET Status = 'Inactive'
+
 WHERE NOT EXISTS (
     SELECT 1
     FROM IssuedBooks1 ib
@@ -106,9 +117,13 @@ SELECT
         THEN (DATEDIFF(CURDATE(), ib.IssueDate) - 14) * 5
         ELSE 0
     END AS PenaltyAmount
+    
 FROM IssuedBooks1 ib
+
 JOIN Students1 s ON ib.StudentID = s.StudentID
+
 JOIN Books1 b ON ib.BookID = b.BookID
+
 WHERE ib.ReturnDate IS NULL;
 
 --Concepts Used
